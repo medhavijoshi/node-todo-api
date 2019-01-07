@@ -1,5 +1,5 @@
-// var MongoClient = require('mongodb').MongoClient;
-var {MongoClient, ObjectID} = require('mongodb');
+// const MongoClient = require('mongodb').MongoClient;
+const {MongoClient, ObjectID} = require('mongodb');
 
 var obj = new ObjectID();
 console.log(obj);
