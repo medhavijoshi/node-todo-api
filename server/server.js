@@ -1,7 +1,7 @@
-var express = require('express');
-var bodyParser = require('body-parser');
-
-var {ObjectID} = require('mongodb');
+const lodash = require('lodash');
+const express = require('express');
+const bodyParser = require('body-parser');
+const {ObjectID} = require('mongodb');
 
 var {mongoose} = require('./db/mongoose');
 var {Todo} = require('./models/todo');
@@ -61,6 +61,34 @@ app.delete('/todos/:id', (req, res) => {
         res.send({todo: todo });
     }).catch((e) => {
         res.status(404).send();
+    });
+});
+
+//help us update to do items
+app.patch('/todos/:id', (req, res) =>{
+    var id = req.body.id;
+    //subset of the things that the user passed to us
+    var body = _.pick(req.body, ['text', 'completed']); // doesn't let user update anything they choose
+
+    if(!ObjectID.isValid(id)){
+        return res.status(404).send();
+    }
+    // completedAt property based off of the completed property
+    if(_.isBoolean(body.completed) && body.completed) {
+        body.completedAt = new Date().getTime();
+    } else {
+        body.completed = false;
+        body.completedAt = null;
+    }
+
+    Todo.findByIdAndUpdate(id, {$set : body}, {new: true}).then((todo) => {
+        if(!todo)
+        {
+            return res.status(404).send();
+        }
+        res.send({todo});
+    }).catch((e) => {
+        res.status(400).send();
     });
 });
 
