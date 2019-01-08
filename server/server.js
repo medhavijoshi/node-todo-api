@@ -1,4 +1,4 @@
-const lodash = require('lodash');
+const _= require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
 const {ObjectID} = require('mongodb');
@@ -66,7 +66,7 @@ app.delete('/todos/:id', (req, res) => {
 
 //help us update to do items
 app.patch('/todos/:id', (req, res) =>{
-    var id = req.body.id;
+    var id = req.params.id;
     //subset of the things that the user passed to us
     var body = _.pick(req.body, ['text', 'completed']); // doesn't let user update anything they choose
 
@@ -81,7 +81,7 @@ app.patch('/todos/:id', (req, res) =>{
         body.completedAt = null;
     }
 
-    Todo.findByIdAndUpdate(id, {$set : body}, {new: true}).then((todo) => {
+    Todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((todo) => {
         if(!todo)
         {
             return res.status(404).send();
