@@ -93,6 +93,22 @@ app.patch('/todos/:id', (req, res) =>{
     });
 });
 
+app.post('/users', (req, res) => {
+    var body = _.pick(req.body, ['email', 'password']);
+    var user = new User(body);
+    user.save().then(()=>{
+         return user.generalAuthToken();
+    }).then((token) => {
+        //to send it as an http request we use header('x-auth', token) 
+        // header takes key value pairs, key is header name and the value is the value you wanna set
+        // x- in the header specifies that we use a custom name
+        //x-auth is the JWT value that we need to send our secure requests like posting a todo or getting todos, deleting todos
+        res.header('x-auth', token).send(user);
+    }).catch((e) => {
+        res.status(400).send(e);
+    });
+});
+
 app.listen(port, () => {
     console.log(`Started on port ${port}`);
 });
